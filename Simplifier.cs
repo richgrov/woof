@@ -29,7 +29,7 @@ internal class Simplifier : Visitor<IExpr>
         if (expr.expr is NotExpr subExpr)
         {
             IExpr newExpr = subExpr.expr;
-            Console.WriteLine($"Apply law of double negation: {expr} -> {newExpr}");
+            LogChange("Apply law of double negation", expr, newExpr);
             return newExpr;
         }
 
@@ -43,7 +43,7 @@ internal class Simplifier : Visitor<IExpr>
         if (isBinaryInner)
         {
             IExpr newExpr = expr.expr.Not();
-            Console.WriteLine($"Distribute with De Morgan's law: {expr} -> {newExpr}");
+            LogChange("Distribute with De Morgan's law", expr, newExpr);
             return newExpr;
         }
 
@@ -53,7 +53,7 @@ internal class Simplifier : Visitor<IExpr>
     public IExpr VisitImplication(ImplicationExpr expr)
     {
         IExpr newExpr = new OrExpr(new NotExpr(expr.left), expr.right);
-        Console.WriteLine($"Expand implication: {expr} -> {newExpr}");
+        LogChange("Expand implication", expr, newExpr);
         return newExpr;
     }
 
@@ -63,7 +63,7 @@ internal class Simplifier : Visitor<IExpr>
             new ImplicationExpr(expr.left, expr.right),
             new ImplicationExpr(expr.right, expr.left)
         );
-        Console.WriteLine($"Expand double implication: {expr} -> {newExpr}");
+        LogChange("Expand double implication", expr, newExpr);
         return newExpr;
     }
 
@@ -78,8 +78,9 @@ internal class Simplifier : Visitor<IExpr>
             if (hadOpposite)
             {
                 IExpr simplified = new OrExpr(subExpr, subExpr.Not());
-                Console.WriteLine($"Apply law of excluded middle: {simplified} -> t");
-                return new ConstantExpr(true);
+                var constant = new ConstantExpr(true);
+                LogChange("Apply law of excluded middle", simplified, constant);
+                return constant;
             }
 
             if (!uniqueExpressions.Contains(subExpr))
@@ -91,7 +92,7 @@ internal class Simplifier : Visitor<IExpr>
         if (expressions.Count != uniqueExpressions.Count)
         {
             IExpr result = JoinExpressions((e1, e2) => new OrExpr(e1, e2), uniqueExpressions);
-            Console.WriteLine($"Apply law of idempotence: {expr} -> {result}");
+            LogChange("Apply law of idempotence", expr, result);
             return result;
         }
 
@@ -109,7 +110,7 @@ internal class Simplifier : Visitor<IExpr>
             if (hadOpposite)
             {
                 IExpr newExpr = new ConstantExpr(false);
-                Console.WriteLine($"Apply law of non-contradiction: {expr} -> {newExpr}");
+                LogChange("Apply law of non-contradiction", expr, newExpr);
                 return newExpr;
             }
 
@@ -122,7 +123,7 @@ internal class Simplifier : Visitor<IExpr>
         if (expressions.Count != uniqueExpressions.Count)
         {
             IExpr result = JoinExpressions((e1, e2) => new AndExpr(e1, e2), uniqueExpressions);
-            Console.WriteLine($"Apply law of idempotence: {expr} -> {result}");
+            LogChange("Apply law of idempotence", expr, result);
             return result;
         }
 
@@ -160,5 +161,10 @@ internal class Simplifier : Visitor<IExpr>
     public static IExpr SimplifyExpression(IExpr expr)
     {
         return new Simplifier().Simplify(expr);
+    }
+
+    private void LogChange(string message, IExpr prev, IExpr now)
+    {
+        Console.WriteLine($"{Ansi.Yellow}{message}: {Ansi.Reset}{prev} {Ansi.Yellow}becomes {Ansi.Reset}{now}");
     }
 }
