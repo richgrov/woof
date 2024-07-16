@@ -14,13 +14,13 @@ internal interface IExpr
     public T Visit<T>(Visitor<T> visitor);
 }
 
-internal record VariableExpr(char c) : IExpr
+internal record VariableExpr(string id) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitVariable(this);
 
     public override string ToString()
     {
-        return c.ToString();
+        return id.ToString();
     }
 }
 

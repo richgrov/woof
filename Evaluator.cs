@@ -42,6 +42,12 @@ internal class Evaluator : Visitor<bool>
     {
         _printingHeader = header;
         _seenColunms.Clear();
+
+        foreach (string id in _vars)
+        {
+            PrintCell(new VariableExpr(id), _values[id]);
+        }
+
         expr.Visit(this);
         Console.WriteLine();
     }
@@ -72,7 +78,7 @@ internal class Evaluator : Visitor<bool>
 
     public bool VisitVariable(VariableExpr expr)
     {
-        bool result = _values[expr.c.ToString()];
+        bool result = _values[expr.id];
         PrintCell(expr, result);
         return result;
     }

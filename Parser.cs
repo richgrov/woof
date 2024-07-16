@@ -116,7 +116,7 @@ internal class Parser
         Token next = Consume();
         if (next.type == TokenType.Var)
         {
-            return new VariableExpr((char)next.data!);
+            return new VariableExpr(next.data!.ToString()!);
         }
 
         throw new ParseException(next, $"unexpected token {next.type}");
