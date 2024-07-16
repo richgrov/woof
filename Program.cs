@@ -23,13 +23,14 @@ internal class Program
             }
 
             IExpr expr = Parser.ParseExpr(tokens);
-            Console.WriteLine(Ansi.Up + expr);
-
+            Console.WriteLine(Ansi.Up + expr + "\n");
             Evaluator.PrintTruthTable(expr);
+            Console.WriteLine();
+
             IExpr simplified = Simplifier.SimplifyExpression(expr);
             if (simplified.ToString() != expr.ToString())
             {
-                Console.WriteLine("Simplified: " + simplified);
+                Console.WriteLine("Simplified: " + simplified + "\n");
                 Evaluator.PrintTruthTable(simplified);
             }
         }
