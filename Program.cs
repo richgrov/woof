@@ -14,7 +14,6 @@ internal class Program
             while (true)
             {
                 Token tok = tokenizer.Next();
-                Console.WriteLine(tok);
                 tokens.Add(tok);
 
                 if (tok.type == TokenType.Eof)
