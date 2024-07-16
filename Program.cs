@@ -27,6 +27,7 @@ internal class Program
             Console.WriteLine(expr);
 
             new Evaluator("p", "q").Eval(expr);
+            new Simplifier().Simplify(expr);
         }
     }
 }
