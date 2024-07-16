@@ -8,8 +8,9 @@ internal class Evaluator : Visitor<bool>
 
     private HashSet<string> _seenColunms = new();
 
-    private Evaluator(params string[] vars)
+    private Evaluator(string[] vars)
     {
+        Array.Sort(vars);
         _vars = vars;
         foreach (string var in _vars)
         {
@@ -141,8 +142,9 @@ internal class Evaluator : Visitor<bool>
         return expr.value;
     }
 
-    public static void PrintTruthTable(IExpr expr, params string[] args)
+    public static void PrintTruthTable(IExpr expr)
     {
-        new Evaluator(args).Eval(expr);
+        var varNames = expr.Variables().ToArray();
+        new Evaluator(varNames).Eval(expr);
     }
 }

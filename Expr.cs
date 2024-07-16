@@ -17,6 +17,8 @@ internal interface IExpr
 
     public IExpr Not();
 
+    public HashSet<string> Variables();
+
     public bool Equals(object? obj)
     {
         return obj is IExpr && obj.ToString() == ToString();
@@ -39,6 +41,8 @@ internal record VariableExpr(string id) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitVariable(this);
 
+    public HashSet<string> Variables() => new HashSet<string> { id };
+
     public IExpr Not()
     {
         return new NotExpr(this);
@@ -53,6 +57,8 @@ internal record VariableExpr(string id) : IExpr
 internal record NotExpr(IExpr expr) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitNot(this);
+
+    public HashSet<string> Variables() => expr.Variables();
 
     public IExpr Not()
     {
@@ -69,6 +75,8 @@ internal record ImplicationExpr(IExpr left, IExpr right) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitImplication(this);
 
+    public HashSet<string> Variables() => left.Variables().Union(right.Variables()).ToHashSet();
+
     public IExpr Not()
     {
         return new AndExpr(left.Not(), right.Not());
@@ -83,6 +91,8 @@ internal record ImplicationExpr(IExpr left, IExpr right) : IExpr
 internal record DoubleImplicationExpr(IExpr left, IExpr right) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitDoubleImplication(this);
+
+    public HashSet<string> Variables() => left.Variables().Union(right.Variables()).ToHashSet();
 
     public IExpr Not()
     {
@@ -101,6 +111,8 @@ internal record OrExpr(IExpr left, IExpr right) : IExpr, IJunctionExpr
 
     public T Visit<T>(Visitor<T> v) => v.VisitOr(this);
 
+    public HashSet<string> Variables() => left.Variables().Union(right.Variables()).ToHashSet();
+
     public IExpr Not()
     {
         return new AndExpr(left.Not(), right.Not());
@@ -118,6 +130,8 @@ internal record AndExpr(IExpr left, IExpr right) : IExpr, IJunctionExpr
 
     public T Visit<T>(Visitor<T> v) => v.VisitAnd(this);
 
+    public HashSet<string> Variables() => left.Variables().Union(right.Variables()).ToHashSet();
+
     public IExpr Not()
     {
         return new OrExpr(left.Not(), right.Not());
@@ -132,6 +146,8 @@ internal record AndExpr(IExpr left, IExpr right) : IExpr, IJunctionExpr
 internal record ConstantExpr(bool value) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitConstant(this);
+
+    public HashSet<string> Variables() => new();
 
     public IExpr Not()
     {
