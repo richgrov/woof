@@ -52,7 +52,7 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitImplication(ImplicationExpr expr)
     {
-        IExpr newExpr = new AndExpr(new NotExpr(expr.left), expr.right);
+        IExpr newExpr = new OrExpr(new NotExpr(expr.left), expr.right);
         Console.WriteLine($"Expand implication: {expr} -> {newExpr}");
         return newExpr;
     }
