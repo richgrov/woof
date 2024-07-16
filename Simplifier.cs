@@ -76,6 +76,12 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitOr(OrExpr expr)
     {
+        IExpr? constantFolded = ConstantFoldOr(expr);
+        if (constantFolded != null)
+        {
+            return constantFolded;
+        }
+
         IExpr newLeft = expr.Left.Visit(this);
         IExpr newRight = expr.Right.Visit(this);
         if (!newLeft.Equals(expr.Left) || !newRight.Equals(expr.Right))
@@ -122,6 +128,12 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitAnd(AndExpr expr)
     {
+        IExpr? constantFolded = ConstantFoldAnd(expr);
+        if (constantFolded != null)
+        {
+            return constantFolded;
+        }
+
         var expressions = ExpressionsInJunctionChain<AndExpr>(expr);
 
         var uniqueExpressions = new List<IExpr>();
@@ -154,6 +166,60 @@ internal class Simplifier : Visitor<IExpr>
     public IExpr VisitConstant(ConstantExpr expr)
     {
         return expr;
+    }
+
+    private IExpr? ConstantFoldOr(OrExpr expr)
+    {
+        IExpr[] left = { expr.Left, expr.Right };
+        IExpr[] right = { expr.Right, expr.Left };
+
+        for (int i = 0; i < 2; i++)
+        {
+            if (!(left[i] is ConstantExpr constant))
+            {
+                continue;
+            }
+
+            if (constant.value)
+            {
+                LogChange("Apply domination law", expr, constant);
+                return constant;
+            }
+            else
+            {
+                LogChange("Apply identity law", expr, right[i]);
+                return right[i];
+            }
+        }
+
+        return null;
+    }
+
+    private IExpr? ConstantFoldAnd(AndExpr expr)
+    {
+        IExpr[] left = { expr.Left, expr.Right };
+        IExpr[] right = { expr.Right, expr.Left };
+
+        for (int i = 0; i < 2; i++)
+        {
+            if (!(left[i] is ConstantExpr constant))
+            {
+                continue;
+            }
+
+            if (constant.value)
+            {
+                LogChange("Apply identity law", expr, right[i]);
+                return right[i];
+            }
+            else
+            {
+                LogChange("Apply domination law", expr, constant);
+                return constant;
+            }
+        }
+
+        return null;
     }
 
     public static List<IExpr> ExpressionsInJunctionChain<T>(IExpr expr) where T : IJunctionExpr
