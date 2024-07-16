@@ -4,7 +4,17 @@ internal class Simplifier : Visitor<IExpr>
 {
     public void Simplify(IExpr expr)
     {
-        expr.Visit(this);
+        IExpr runningExpr = expr;
+        while (true)
+        {
+            IExpr newExpr = runningExpr.Visit(this);
+            if (newExpr.ToString() == runningExpr.ToString())
+            {
+                break;
+            }
+
+            runningExpr = newExpr;
+        }
     }
 
     public IExpr VisitVariable(VariableExpr expr)
@@ -14,7 +24,7 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitNot(NotExpr expr)
     {
-        return expr;
+        return new NotExpr(expr.expr.Visit(this));
     }
 
     public IExpr VisitImplication(ImplicationExpr expr)
@@ -26,11 +36,17 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitOr(OrExpr expr)
     {
-        return expr;
+        if (expr.left.ToString() == expr.right.ToString())
+        {
+            Console.WriteLine($"Apply law of idempotence: {expr} -> {expr.left}");
+            return expr.left;
+        }
+
+        return new OrExpr(expr.left.Visit(this), expr.right.Visit(this));
     }
 
     public IExpr VisitAnd(AndExpr expr)
     {
-        return expr;
+        return new AndExpr(expr.left.Visit(this), expr.right.Visit(this));
     }
 }
