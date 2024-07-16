@@ -41,7 +41,7 @@ internal record ImplicationExpr(IExpr left, IExpr right) : IExpr
 
     public override string ToString()
     {
-        return $"({left}) v ({right})";
+        return $"({left}) -> ({right})";
     }
 }
 
