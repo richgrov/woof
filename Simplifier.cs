@@ -24,6 +24,13 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitNot(NotExpr expr)
     {
+        if (expr.expr is NotExpr subExpr)
+        {
+            IExpr newExpr = subExpr.expr;
+            Console.WriteLine($"Apply law of double negation: {expr} -> {newExpr}");
+            return newExpr;
+        }
+
         return new NotExpr(expr.expr.Visit(this));
     }
 
