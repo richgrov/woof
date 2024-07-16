@@ -69,6 +69,13 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitOr(OrExpr expr)
     {
+        IExpr newLeft = expr.Left.Visit(this);
+        IExpr newRight = expr.Right.Visit(this);
+        if (!newLeft.Equals(expr.Left) || !newRight.Equals(expr.Right))
+        {
+            return new OrExpr(newLeft, newRight);
+        }
+
         var expressions = ExpressionsInJunctionChain<OrExpr>(expr);
 
         var uniqueExpressions = new List<IExpr>();
@@ -96,7 +103,14 @@ internal class Simplifier : Visitor<IExpr>
             return result;
         }
 
-        return new OrExpr(expr.Left.Visit(this), expr.Right.Visit(this));
+        IExpr? distributed = DisjunctionOverConjunction(expr);
+        if (distributed != null)
+        {
+            LogChange("Apply law of disjunction over conjunction", expr, distributed);
+            return distributed;
+        }
+
+        return expr;
     }
 
     public IExpr VisitAnd(AndExpr expr)
@@ -156,6 +170,25 @@ internal class Simplifier : Visitor<IExpr>
             result = combiner(result, expressions[i]);
         }
         return result;
+    }
+
+    private static IExpr? DisjunctionOverConjunction(OrExpr expr)
+    {
+        HashSet<string> leftVars = expr.Left.Variables();
+        HashSet<string> rightVars = expr.Right.Variables();
+
+        if (leftVars.Intersect(rightVars).Count() > 0)
+        {
+            if (expr.Left is AndExpr leftAnd)
+            {
+                return new AndExpr(new OrExpr(leftAnd.Left, expr.Right), new OrExpr(leftAnd.Right, expr.Right));
+            }
+            else if (expr.Right is AndExpr rightAnd)
+            {
+                return new AndExpr(new OrExpr(rightAnd.Left, expr.Left), new OrExpr(rightAnd.Right, expr.Left));
+            }
+        }
+        return null;
     }
 
     public static IExpr SimplifyExpression(IExpr expr)
