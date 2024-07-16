@@ -64,16 +64,29 @@ internal class Parser
         while (true)
         {
             Token next = Peek();
+            switch (next.type)
+            {
+                case TokenType.RightArrow:
+                    Consume();
+                    expr = new ImplicationExpr(expr, ParseNot());
+                    break;
+
+                case TokenType.DoubleArrow:
+                    Consume();
+                    expr = new DoubleImplicationExpr(expr, ParseNot());
+                    break;
+
+                default: goto Done;
+            }
             if (next.type == TokenType.RightArrow)
             {
-                Consume();
-                expr = new ImplicationExpr(expr, ParseNot());
             }
             else
             {
                 break;
             }
         }
+    Done:
 
         return expr;
     }

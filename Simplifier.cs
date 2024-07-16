@@ -57,6 +57,16 @@ internal class Simplifier : Visitor<IExpr>
         return newExpr;
     }
 
+    public IExpr VisitDoubleImplication(DoubleImplicationExpr expr)
+    {
+        IExpr newExpr = new AndExpr(
+            new ImplicationExpr(expr.left, expr.right),
+            new ImplicationExpr(expr.right, expr.left)
+        );
+        Console.WriteLine($"Expand double implication: {expr} -> {newExpr}");
+        return newExpr;
+    }
+
     public IExpr VisitOr(OrExpr expr)
     {
         var expressions = ExpressionsInJunctionChain<OrExpr>(expr);

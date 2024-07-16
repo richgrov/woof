@@ -104,6 +104,19 @@ internal class Evaluator : Visitor<bool>
         return result;
     }
 
+    public bool VisitDoubleImplication(DoubleImplicationExpr expr)
+    {
+        bool resultLeft = !expr.left.Visit(this);
+        bool resultRight = !expr.right.Visit(this);
+
+        bool leftImplRight = !resultLeft || resultRight;
+        bool rightImplLeft = !resultRight || resultLeft;
+        bool result = leftImplRight && rightImplLeft;
+
+        PrintCell(expr, result);
+        return result;
+    }
+
     public bool VisitOr(OrExpr expr)
     {
         bool result = expr.left.Visit(this);

@@ -45,6 +45,14 @@ internal class Tokenizer
                 {
                     throw new ParseException(_line, col, $"expected '>' after hyphen, got {after}");
                 }
+            case '<':
+                char after1 = _input[_readIndex++];
+                char after2 = _input[_readIndex++];
+                if (after1 == '-' && after2 == '>')
+                {
+                    return new Token(TokenType.DoubleArrow, _line, col, null);
+                }
+                break;
 
             default:
                 if (char.IsLetter(c))
@@ -93,4 +101,5 @@ internal enum TokenType
     CloseParen,
     Not,
     RightArrow,
+    DoubleArrow,
 }

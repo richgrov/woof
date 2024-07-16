@@ -5,6 +5,7 @@ internal interface Visitor<T>
     T VisitVariable(VariableExpr expr);
     T VisitNot(NotExpr expr);
     T VisitImplication(ImplicationExpr expr);
+    T VisitDoubleImplication(DoubleImplicationExpr expr);
     T VisitOr(OrExpr expr);
     T VisitAnd(AndExpr expr);
     T VisitConstant(ConstantExpr expr);
@@ -76,6 +77,21 @@ internal record ImplicationExpr(IExpr left, IExpr right) : IExpr
     public override string ToString()
     {
         return $"({left} -> {right})";
+    }
+}
+
+internal record DoubleImplicationExpr(IExpr left, IExpr right) : IExpr
+{
+    public T Visit<T>(Visitor<T> v) => v.VisitDoubleImplication(this);
+
+    public IExpr Not()
+    {
+        return new OrExpr(new ImplicationExpr(left, right).Not(), new ImplicationExpr(right, left).Not());
+    }
+
+    public override string ToString()
+    {
+        return $"({left} <-> {right})";
     }
 }
 
