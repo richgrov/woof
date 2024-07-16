@@ -31,7 +31,21 @@ internal class Simplifier : Visitor<IExpr>
             return newExpr;
         }
 
-        return new NotExpr(expr.expr.Visit(this));
+        IExpr simplifiedInner = expr.expr.Visit(this);
+        if (simplifiedInner.ToString() != expr.expr.ToString())
+        {
+            return simplifiedInner;
+        }
+
+        bool isBinaryInner = expr.expr is AndExpr || expr.expr is OrExpr || expr.expr is ImplicationExpr;
+        if (isBinaryInner)
+        {
+            IExpr newExpr = expr.expr.Not();
+            Console.WriteLine($"Distribute with De Morgan's law: {expr} -> {newExpr}");
+            return newExpr;
+        }
+
+        return expr;
     }
 
     public IExpr VisitImplication(ImplicationExpr expr)
