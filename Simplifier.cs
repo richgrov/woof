@@ -49,6 +49,12 @@ internal class Simplifier : Visitor<IExpr>
             return expr.left;
         }
 
+        if (expr.left.Not().ToString() == expr.right.ToString())
+        {
+            Console.WriteLine($"Apply law of excluded middle: {expr} -> t");
+            return new ConstantExpr(true);
+        }
+
         return new OrExpr(expr.left.Visit(this), expr.right.Visit(this));
     }
 
