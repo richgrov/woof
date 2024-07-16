@@ -2,6 +2,8 @@ namespace Woof;
 
 internal class Evaluator : Visitor<bool>
 {
+    private const string ColumnSeparator = " | ";
+
     private string[] _vars;
     private Dictionary<string, bool> _values = new();
     private bool _printingHeader = false;
@@ -21,6 +23,18 @@ internal class Evaluator : Visitor<bool>
     private void Eval(IExpr expr)
     {
         PrintRow(expr, header: true);
+
+        int dividingLineLength = _seenColunms.Aggregate(
+            0,
+            (count, label) => count + label.Length,
+            count =>
+            {
+                int columnSpaces = _seenColunms.Count - 1;
+                return columnSpaces * ColumnSeparator.Length + count;
+            }
+        );
+        Console.WriteLine(new string('=', dividingLineLength));
+
         EvalCombinations(0, expr);
     }
 
@@ -68,7 +82,7 @@ internal class Evaluator : Visitor<bool>
 
         if (_seenColunms.Count > 1)
         {
-            Console.Write(" | ");
+            Console.Write(ColumnSeparator);
         }
 
         if (_printingHeader)
