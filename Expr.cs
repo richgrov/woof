@@ -32,8 +32,8 @@ internal interface IExpr
 
 internal interface IJunctionExpr : IExpr
 {
-    public IExpr left { get; }
-    public IExpr right { get; }
+    public IExpr Left { get; }
+    public IExpr Right { get; }
     public bool IsConjunctive { get; }
 }
 
@@ -105,41 +105,71 @@ internal record DoubleImplicationExpr(IExpr left, IExpr right) : IExpr
     }
 }
 
-internal record OrExpr(IExpr left, IExpr right) : IExpr, IJunctionExpr
+internal class OrExpr : IExpr, IJunctionExpr
 {
+    public IExpr Left { get; private set; }
+    public IExpr Right { get; private set; }
+
+    public OrExpr(IExpr left, IExpr right)
+    {
+        Left = left;
+        Right = right;
+    }
+
     public bool IsConjunctive => false;
 
     public T Visit<T>(Visitor<T> v) => v.VisitOr(this);
 
-    public HashSet<string> Variables() => left.Variables().Union(right.Variables()).ToHashSet();
+    public HashSet<string> Variables() => Left.Variables().Union(Right.Variables()).ToHashSet();
 
     public IExpr Not()
     {
-        return new AndExpr(left.Not(), right.Not());
+        return new AndExpr(Left.Not(), Right.Not());
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is OrExpr expr)
+        {
+            return (expr.Left.Equals(Left) && expr.Right.Equals(Right)) ||
+                (expr.Left.Equals(Right) && expr.Right.Equals(Left));
+        }
+        return false;
+    }
+
+    public override int GetHashCode() => ToString().GetHashCode();
 
     public override string ToString()
     {
-        return $"({left} v {right})";
+        return $"({Left} v {Right})";
     }
 }
 
-internal record AndExpr(IExpr left, IExpr right) : IExpr, IJunctionExpr
+internal record AndExpr : IExpr, IJunctionExpr
 {
+    public IExpr Left { get; private set; }
+    public IExpr Right { get; private set; }
+
+    public AndExpr(IExpr left, IExpr right)
+    {
+        Left = left;
+        Right = right;
+    }
+
     public bool IsConjunctive => true;
 
     public T Visit<T>(Visitor<T> v) => v.VisitAnd(this);
 
-    public HashSet<string> Variables() => left.Variables().Union(right.Variables()).ToHashSet();
+    public HashSet<string> Variables() => Left.Variables().Union(Right.Variables()).ToHashSet();
 
     public IExpr Not()
     {
-        return new OrExpr(left.Not(), right.Not());
+        return new OrExpr(Left.Not(), Right.Not());
     }
 
     public override string ToString()
     {
-        return $"({left} ^ {right})";
+        return $"({Left} ^ {Right})";
     }
 }
 

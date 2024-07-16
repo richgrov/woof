@@ -136,8 +136,8 @@ internal class Evaluator : Visitor<bool>
 
     public bool VisitOr(OrExpr expr)
     {
-        bool result = expr.left.Visit(this);
-        result = expr.right.Visit(this) || result;
+        bool result = expr.Left.Visit(this);
+        result = expr.Right.Visit(this) || result;
 
         PrintCell(expr, result);
         return result;
@@ -145,8 +145,8 @@ internal class Evaluator : Visitor<bool>
 
     public bool VisitAnd(AndExpr expr)
     {
-        bool result = expr.left.Visit(this);
-        result = expr.right.Visit(this) && result;
+        bool result = expr.Left.Visit(this);
+        result = expr.Right.Visit(this) && result;
 
         PrintCell(expr, result);
         return result;

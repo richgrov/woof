@@ -96,7 +96,7 @@ internal class Simplifier : Visitor<IExpr>
             return result;
         }
 
-        return new OrExpr(expr.left.Visit(this), expr.right.Visit(this));
+        return new OrExpr(expr.Left.Visit(this), expr.Right.Visit(this));
     }
 
     public IExpr VisitAnd(AndExpr expr)
@@ -127,7 +127,7 @@ internal class Simplifier : Visitor<IExpr>
             return result;
         }
 
-        return new AndExpr(expr.left.Visit(this), expr.right.Visit(this));
+        return new AndExpr(expr.Left.Visit(this), expr.Right.Visit(this));
     }
 
     public IExpr VisitConstant(ConstantExpr expr)
@@ -143,8 +143,8 @@ internal class Simplifier : Visitor<IExpr>
         }
 
         var expressions = new List<IExpr>();
-        expressions.AddRange(ExpressionsInJunctionChain<T>(junction.left));
-        expressions.AddRange(ExpressionsInJunctionChain<T>(junction.right));
+        expressions.AddRange(ExpressionsInJunctionChain<T>(junction.Left));
+        expressions.AddRange(ExpressionsInJunctionChain<T>(junction.Right));
         return expressions;
     }
 
