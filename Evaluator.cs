@@ -54,6 +54,11 @@ internal class Evaluator : Visitor<bool>
 
     private void PrintCell(IExpr expr, bool value)
     {
+        if (expr is ConstantExpr)
+        {
+            return;
+        }
+
         string exprString = expr.ToString()!;
         if (!_seenColunms.Add(exprString))
         {
@@ -115,5 +120,11 @@ internal class Evaluator : Visitor<bool>
 
         PrintCell(expr, result);
         return result;
+    }
+
+    public bool VisitConstant(ConstantExpr expr)
+    {
+        PrintCell(expr, expr.value);
+        return expr.value;
     }
 }

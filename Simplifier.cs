@@ -56,4 +56,9 @@ internal class Simplifier : Visitor<IExpr>
     {
         return new AndExpr(expr.left.Visit(this), expr.right.Visit(this));
     }
+
+    public IExpr VisitConstant(ConstantExpr expr)
+    {
+        return expr;
+    }
 }

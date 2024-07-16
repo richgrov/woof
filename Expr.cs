@@ -7,6 +7,7 @@ internal interface Visitor<T>
     T VisitImplication(ImplicationExpr expr);
     T VisitOr(OrExpr expr);
     T VisitAnd(AndExpr expr);
+    T VisitConstant(ConstantExpr expr);
 }
 
 internal interface IExpr
@@ -61,5 +62,20 @@ internal record AndExpr(IExpr left, IExpr right) : IExpr
     public override string ToString()
     {
         return $"({left}) ^ ({right})";
+    }
+}
+
+internal record ConstantExpr(bool value) : IExpr
+{
+    public T Visit<T>(Visitor<T> v) => v.VisitConstant(this);
+
+    public IExpr Not()
+    {
+        return new ConstantExpr(!value);
+    }
+
+    public override string ToString()
+    {
+        return value ? "t" : "~t";
     }
 }
