@@ -23,12 +23,13 @@ internal class Program
             }
 
             IExpr expr = Parser.ParseExpr(tokens);
-            Console.WriteLine(expr);
+            Console.WriteLine("Reformatted: " + expr);
 
             Evaluator.PrintTruthTable(expr, "p", "q");
             IExpr simplified = Simplifier.SimplifyExpression(expr);
             if (simplified.ToString() != expr.ToString())
             {
+                Console.WriteLine("Simplified: " + simplified);
                 Evaluator.PrintTruthTable(simplified, "p", "q");
             }
         }
