@@ -21,22 +21,22 @@ internal class Evaluator : Visitor<bool>
         return _vars[expr.c.ToString()];
     }
 
-    bool Visitor<bool>.VisitNot(NotExpr expr)
+    public bool VisitNot(NotExpr expr)
     {
         return !expr.expr.Visit(this);
     }
 
-    bool Visitor<bool>.VisitImplication(ImplicationExpr expr)
+    public bool VisitImplication(ImplicationExpr expr)
     {
         return !expr.left.Visit(this) || expr.right.Visit(this);
     }
 
-    bool Visitor<bool>.VisitOr(OrExpr expr)
+    public bool VisitOr(OrExpr expr)
     {
         return expr.left.Visit(this) || expr.right.Visit(this);
     }
 
-    bool Visitor<bool>.VisitAnd(AndExpr expr)
+    public bool VisitAnd(AndExpr expr)
     {
         return expr.left.Visit(this) && expr.right.Visit(this);
     }
