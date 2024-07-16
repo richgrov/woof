@@ -58,7 +58,7 @@ internal record ImplicationExpr(IExpr left, IExpr right) : IExpr
 
     public override string ToString()
     {
-        return $"({left}) -> ({right})";
+        return $"({left} -> {right})";
     }
 }
 
@@ -73,7 +73,7 @@ internal record OrExpr(IExpr left, IExpr right) : IExpr
 
     public override string ToString()
     {
-        return $"({left}) v ({right})";
+        return $"({left} v {right})";
     }
 }
 
@@ -88,7 +88,7 @@ internal record AndExpr(IExpr left, IExpr right) : IExpr
 
     public override string ToString()
     {
-        return $"({left}) ^ ({right})";
+        return $"({left} ^ {right})";
     }
 }
 
