@@ -60,6 +60,13 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitAnd(AndExpr expr)
     {
+        if (expr.left.Not().ToString() == expr.right.ToString())
+        {
+            IExpr newExpr = new ConstantExpr(false);
+            Console.WriteLine($"Apply law of non-contradiction: {expr} -> {newExpr}");
+            return newExpr;
+        }
+
         return new AndExpr(expr.left.Visit(this), expr.right.Visit(this));
     }
 
