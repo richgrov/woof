@@ -23,7 +23,7 @@ internal class Program
             }
 
             IExpr expr = Parser.ParseExpr(tokens);
-            Console.WriteLine("Reformatted: " + expr);
+            Console.WriteLine(Ansi.Up + expr);
 
             Evaluator.PrintTruthTable(expr, "p", "q");
             IExpr simplified = Simplifier.SimplifyExpression(expr);
