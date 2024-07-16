@@ -15,6 +15,8 @@ internal class Simplifier : Visitor<IExpr>
 
             runningExpr = newExpr;
         }
+
+        return runningExpr;
     }
 
     public IExpr VisitVariable(VariableExpr expr)
@@ -57,16 +59,29 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitOr(OrExpr expr)
     {
-        if (expr.left.ToString() == expr.right.ToString())
+        var expressions = ExpressionsInJunctionChain<OrExpr>(expr);
+
+        var uniqueExpressions = new List<IExpr>();
+        foreach (IExpr subExpr in expressions)
         {
-            Console.WriteLine($"Apply law of idempotence: {expr} -> {expr.left}");
-            return expr.left;
+            bool hadOpposite = uniqueExpressions.Remove(subExpr.Not());
+            if (hadOpposite)
+            {
+                Console.WriteLine($"Apply law of excluded middle: {expr} -> t");
+                return new ConstantExpr(true);
+            }
+
+            if (!uniqueExpressions.Contains(subExpr))
+            {
+                uniqueExpressions.Add(subExpr);
+            }
         }
 
-        if (expr.left.Not().ToString() == expr.right.ToString())
+        if (expressions.Count != uniqueExpressions.Count)
         {
-            Console.WriteLine($"Apply law of excluded middle: {expr} -> t");
-            return new ConstantExpr(true);
+            IExpr result = JoinExpressions((e1, e2) => new OrExpr(e1, e2), uniqueExpressions);
+            Console.WriteLine($"Apply law of idempotence: {expr} -> {result}");
+            return result;
         }
 
         return new OrExpr(expr.left.Visit(this), expr.right.Visit(this));
@@ -74,11 +89,30 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitAnd(AndExpr expr)
     {
-        if (expr.left.Not().ToString() == expr.right.ToString())
+        var expressions = ExpressionsInJunctionChain<AndExpr>(expr);
+
+        var uniqueExpressions = new List<IExpr>();
+        foreach (IExpr subExpr in expressions)
         {
-            IExpr newExpr = new ConstantExpr(false);
-            Console.WriteLine($"Apply law of non-contradiction: {expr} -> {newExpr}");
-            return newExpr;
+            bool hadOpposite = uniqueExpressions.Remove(subExpr.Not());
+            if (hadOpposite)
+            {
+                IExpr newExpr = new ConstantExpr(false);
+                Console.WriteLine($"Apply law of non-contradiction: {expr} -> {newExpr}");
+                return newExpr;
+            }
+
+            if (!uniqueExpressions.Contains(subExpr))
+            {
+                uniqueExpressions.Add(subExpr);
+            }
+        }
+
+        if (expressions.Count != uniqueExpressions.Count)
+        {
+            IExpr result = JoinExpressions((e1, e2) => new AndExpr(e1, e2), uniqueExpressions);
+            Console.WriteLine($"Apply law of idempotence: {expr} -> {result}");
+            return result;
         }
 
         return new AndExpr(expr.left.Visit(this), expr.right.Visit(this));
@@ -87,6 +121,29 @@ internal class Simplifier : Visitor<IExpr>
     public IExpr VisitConstant(ConstantExpr expr)
     {
         return expr;
+    }
+
+    public static List<IExpr> ExpressionsInJunctionChain<T>(IExpr expr) where T : IJunctionExpr
+    {
+        if (!(expr is T junction))
+        {
+            return new List<IExpr> { expr };
+        }
+
+        var expressions = new List<IExpr>();
+        expressions.AddRange(ExpressionsInJunctionChain<T>(junction.left));
+        expressions.AddRange(ExpressionsInJunctionChain<T>(junction.right));
+        return expressions;
+    }
+
+    public static IExpr JoinExpressions(Func<IExpr, IExpr, IExpr> combiner, List<IExpr> expressions)
+    {
+        IExpr result = expressions[0];
+        for (int i = 1; i < expressions.Count; i++)
+        {
+            result = combiner(result, expressions[i]);
+        }
+        return result;
     }
 
     public static IExpr SimplifyExpression(IExpr expr)

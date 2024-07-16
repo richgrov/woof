@@ -15,6 +15,23 @@ internal interface IExpr
     public T Visit<T>(Visitor<T> visitor);
 
     public IExpr Not();
+
+    public bool Equals(object? obj)
+    {
+        return obj is IExpr && obj.ToString() == ToString();
+    }
+
+    public int GetHashCode()
+    {
+        return ToString()!.GetHashCode();
+    }
+}
+
+internal interface IJunctionExpr : IExpr
+{
+    public IExpr left { get; }
+    public IExpr right { get; }
+    public bool IsConjunctive { get; }
 }
 
 internal record VariableExpr(string id) : IExpr
@@ -62,8 +79,10 @@ internal record ImplicationExpr(IExpr left, IExpr right) : IExpr
     }
 }
 
-internal record OrExpr(IExpr left, IExpr right) : IExpr
+internal record OrExpr(IExpr left, IExpr right) : IExpr, IJunctionExpr
 {
+    public bool IsConjunctive => false;
+
     public T Visit<T>(Visitor<T> v) => v.VisitOr(this);
 
     public IExpr Not()
@@ -77,8 +96,10 @@ internal record OrExpr(IExpr left, IExpr right) : IExpr
     }
 }
 
-internal record AndExpr(IExpr left, IExpr right) : IExpr
+internal record AndExpr(IExpr left, IExpr right) : IExpr, IJunctionExpr
 {
+    public bool IsConjunctive => true;
+
     public T Visit<T>(Visitor<T> v) => v.VisitAnd(this);
 
     public IExpr Not()
