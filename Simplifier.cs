@@ -77,7 +77,8 @@ internal class Simplifier : Visitor<IExpr>
             bool hadOpposite = uniqueExpressions.Remove(subExpr.Not());
             if (hadOpposite)
             {
-                Console.WriteLine($"Apply law of excluded middle: {expr} -> t");
+                IExpr simplified = new OrExpr(subExpr, subExpr.Not());
+                Console.WriteLine($"Apply law of excluded middle: {simplified} -> t");
                 return new ConstantExpr(true);
             }
 
