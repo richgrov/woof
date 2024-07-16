@@ -186,6 +186,6 @@ internal record ConstantExpr(bool value) : IExpr
 
     public override string ToString()
     {
-        return value ? "t" : "~t";
+        return value ? "t" : "/";
     }
 }
