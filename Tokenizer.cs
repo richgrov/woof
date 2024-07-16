@@ -1,0 +1,96 @@
+namespace Woof;
+
+internal class Tokenizer
+{
+    private readonly string _input;
+    private int _readIndex = 0;
+    private int _line = 1;
+    private int _col = 1;
+
+    public Tokenizer(string input)
+    {
+        _input = input;
+    }
+
+    public Token Next()
+    {
+        ConsumeWhitespace();
+
+        if (_readIndex >= _input.Length)
+        {
+            return new Token(TokenType.Eof, _line, _col, null);
+        }
+
+        char c = _input[_readIndex++];
+        int col = _col++;
+        switch (c)
+        {
+            case '^':
+                return new Token(TokenType.UpCaret, _line, col, null);
+            case 'v':
+                return new Token(TokenType.DownCaret, _line, col, null);
+            case '(':
+                return new Token(TokenType.OpenParen, _line, col, null);
+            case ')':
+                return new Token(TokenType.CloseParen, _line, col, null);
+            case '~':
+                return new Token(TokenType.Not, _line, col, null);
+            case '-':
+                char after = _input[_readIndex++];
+                if (after == '>')
+                {
+                    return new Token(TokenType.RightArrow, _line, _col++, null);
+                }
+                else
+                {
+                    throw new ParseException(_line, col, $"expected '>' after hyphen, got {after}");
+                }
+
+            default:
+                if (char.IsLetter(c))
+                {
+                    return new Token(TokenType.Var, _line, col, c);
+                }
+                break;
+        }
+
+        throw new ParseException(_line, col, $"invalid character {c}");
+    }
+
+    private void ConsumeWhitespace()
+    {
+        while (_readIndex < _input.Length)
+        {
+            char next = _input[_readIndex];
+            if (next == '\n' || next == '\r')
+            {
+                _line++;
+                _col = 1;
+            }
+            else if (next == ' ')
+            {
+                _col++;
+            }
+            else
+            {
+                return;
+            }
+
+            _readIndex++;
+        }
+    }
+}
+
+internal record Token(TokenType type, int line, int col, object? data);
+
+internal enum TokenType
+{
+    Eof,
+    Var,
+    UpCaret,
+    DownCaret,
+    OpenParen,
+    CloseParen,
+    Not,
+    RightArrow,
+}
