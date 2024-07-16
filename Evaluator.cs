@@ -8,7 +8,7 @@ internal class Evaluator : Visitor<bool>
 
     private HashSet<string> _seenColunms = new();
 
-    public Evaluator(params string[] vars)
+    private Evaluator(params string[] vars)
     {
         _vars = vars;
         foreach (string var in _vars)
@@ -17,7 +17,7 @@ internal class Evaluator : Visitor<bool>
         }
     }
 
-    public void Eval(IExpr expr)
+    private void Eval(IExpr expr)
     {
         PrintRow(expr, header: true);
         EvalCombinations(0, expr);
@@ -126,5 +126,10 @@ internal class Evaluator : Visitor<bool>
     {
         PrintCell(expr, expr.value);
         return expr.value;
+    }
+
+    public static void PrintTruthTable(IExpr expr, params string[] args)
+    {
+        new Evaluator(args).Eval(expr);
     }
 }

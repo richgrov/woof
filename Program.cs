@@ -26,8 +26,12 @@ internal class Program
             IExpr expr = Parser.ParseExpr(tokens);
             Console.WriteLine(expr);
 
-            new Evaluator("p", "q").Eval(expr);
-            new Simplifier().Simplify(expr);
+            Evaluator.PrintTruthTable(expr, "p", "q");
+            IExpr simplified = Simplifier.SimplifyExpression(expr);
+            if (simplified.ToString() != expr.ToString())
+            {
+                Evaluator.PrintTruthTable(simplified, "p", "q");
+            }
         }
     }
 }

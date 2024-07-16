@@ -2,7 +2,7 @@ namespace Woof;
 
 internal class Simplifier : Visitor<IExpr>
 {
-    public void Simplify(IExpr expr)
+    private IExpr Simplify(IExpr expr)
     {
         IExpr runningExpr = expr;
         while (true)
@@ -87,5 +87,10 @@ internal class Simplifier : Visitor<IExpr>
     public IExpr VisitConstant(ConstantExpr expr)
     {
         return expr;
+    }
+
+    public static IExpr SimplifyExpression(IExpr expr)
+    {
+        return new Simplifier().Simplify(expr);
     }
 }
