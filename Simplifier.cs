@@ -26,6 +26,13 @@ internal class Simplifier : Visitor<IExpr>
 
     public IExpr VisitNot(NotExpr expr)
     {
+        if (expr.expr is ConstantExpr constant)
+        {
+            IExpr newExpr = constant.Not();
+            LogChange("Apply law of contradiction", expr, newExpr);
+            return newExpr;
+        }
+
         if (expr.expr is NotExpr subExpr)
         {
             IExpr newExpr = subExpr.expr;
