@@ -91,8 +91,10 @@ internal class Evaluator : Visitor<bool>
         }
         else
         {
-            Console.Write(value ? "T" : "F");
-            Console.Write(new string(' ', exprString.Length - 1));
+            int leftPad = exprString.Length / 2;
+            Console.Write(new string(' ', leftPad));
+            Console.Write(value ? Ansi.Green + "T" : Ansi.Red + "F");
+            Console.Write(Ansi.Reset + new string(' ', exprString.Length - 1 - leftPad));
         }
     }
 
