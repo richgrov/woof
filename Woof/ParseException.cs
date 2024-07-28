@@ -1,6 +1,6 @@
 namespace Woof;
 
-internal class ParseException : Exception
+public class ParseException : Exception
 {
     public ParseException(int line, int col, string message)
         : base($"{line}:{col}: {message}")
