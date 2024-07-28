@@ -39,6 +39,13 @@ public class ParseTest
         Assert.AreEqual(new AndExpr(new VariableExpr("p"), new VariableExpr("q")), ToExpr("p^q"));
     }
 
+    [TestMethod]
+    public void TestIncompleteParenthesisThrows()
+    {
+        var tokens = ToTokens("(p->q");
+        Assert.ThrowsException<ParseException>(() => Parser.ParseExpr(tokens));
+    }
+
     private static List<Token> ToTokens(string input)
     {
         var tokens = new List<Token>();
