@@ -39,7 +39,7 @@ public class ParseTest
         Assert.AreEqual(new AndExpr(new VariableExpr("p"), new VariableExpr("q")), ToExpr("p^q"));
     }
 
-    private static IExpr ToExpr(string input)
+    private static List<Token> ToTokens(string input)
     {
         var tokens = new List<Token>();
         var tokenizer = new Tokenizer(input);
@@ -53,6 +53,11 @@ public class ParseTest
             }
         }
 
-        return Parser.ParseExpr(tokens);
+        return tokens;
+    }
+
+    private static IExpr ToExpr(string input)
+    {
+        return Parser.ParseExpr(ToTokens(input));
     }
 }
