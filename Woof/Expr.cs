@@ -1,6 +1,6 @@
 namespace Woof;
 
-internal interface Visitor<T>
+public interface Visitor<T>
 {
     T VisitVariable(VariableExpr expr);
     T VisitNot(NotExpr expr);
@@ -11,7 +11,7 @@ internal interface Visitor<T>
     T VisitConstant(ConstantExpr expr);
 }
 
-internal interface IExpr
+public interface IExpr
 {
     public T Visit<T>(Visitor<T> visitor);
 
@@ -30,14 +30,14 @@ internal interface IExpr
     }
 }
 
-internal interface IJunctionExpr : IExpr
+public interface IJunctionExpr : IExpr
 {
     public IExpr Left { get; }
     public IExpr Right { get; }
     public bool IsConjunctive { get; }
 }
 
-internal record VariableExpr(string id) : IExpr
+public record VariableExpr(string id) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitVariable(this);
 
@@ -54,7 +54,7 @@ internal record VariableExpr(string id) : IExpr
     }
 }
 
-internal record NotExpr(IExpr expr) : IExpr
+public record NotExpr(IExpr expr) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitNot(this);
 
@@ -71,7 +71,7 @@ internal record NotExpr(IExpr expr) : IExpr
     }
 }
 
-internal record ImplicationExpr(IExpr left, IExpr right) : IExpr
+public record ImplicationExpr(IExpr left, IExpr right) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitImplication(this);
 
@@ -88,7 +88,7 @@ internal record ImplicationExpr(IExpr left, IExpr right) : IExpr
     }
 }
 
-internal record DoubleImplicationExpr(IExpr left, IExpr right) : IExpr
+public record DoubleImplicationExpr(IExpr left, IExpr right) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitDoubleImplication(this);
 
@@ -105,7 +105,7 @@ internal record DoubleImplicationExpr(IExpr left, IExpr right) : IExpr
     }
 }
 
-internal class OrExpr : IExpr, IJunctionExpr
+public class OrExpr : IExpr, IJunctionExpr
 {
     public IExpr Left { get; private set; }
     public IExpr Right { get; private set; }
@@ -145,7 +145,7 @@ internal class OrExpr : IExpr, IJunctionExpr
     }
 }
 
-internal record AndExpr : IExpr, IJunctionExpr
+public record AndExpr : IExpr, IJunctionExpr
 {
     public IExpr Left { get; private set; }
     public IExpr Right { get; private set; }
@@ -173,7 +173,7 @@ internal record AndExpr : IExpr, IJunctionExpr
     }
 }
 
-internal record ConstantExpr(bool value) : IExpr
+public record ConstantExpr(bool value) : IExpr
 {
     public T Visit<T>(Visitor<T> v) => v.VisitConstant(this);
 

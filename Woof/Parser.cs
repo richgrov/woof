@@ -1,6 +1,6 @@
 namespace Woof;
 
-internal class Parser
+public class Parser
 {
     private readonly List<Token> _tokens;
     private int _readIndex = 0;
