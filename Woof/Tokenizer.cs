@@ -1,6 +1,6 @@
 namespace Woof;
 
-internal class Tokenizer
+public class Tokenizer
 {
     private readonly string _input;
     private int _readIndex = 0;
@@ -59,7 +59,7 @@ internal class Tokenizer
             default:
                 if (char.IsLetter(c))
                 {
-                    return new Token(TokenType.Var, _line, col, c);
+                    return new Token(TokenType.Var, _line, col, c.ToString());
                 }
                 break;
         }
@@ -91,9 +91,9 @@ internal class Tokenizer
     }
 }
 
-internal record Token(TokenType type, int line, int col, object? data);
+public record Token(TokenType type, int line, int col, object? data);
 
-internal enum TokenType
+public enum TokenType
 {
     Eof,
     Var,
