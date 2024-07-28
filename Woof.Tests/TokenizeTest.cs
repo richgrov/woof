@@ -39,9 +39,6 @@ public class TokenizeTest
             new Token(TokenType.Eof, 1, 18, null),
         };
 
-        for (int i = 0; i < tokens.Count; i++)
-        {
-            Assert.AreEqual(expected[i], tokens[i]);
-        }
+        CollectionAssertExt.AreEqual(expected, tokens);
     }
 }
