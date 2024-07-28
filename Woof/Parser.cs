@@ -78,13 +78,6 @@ public class Parser
 
                 default: goto Done;
             }
-            if (next.type == TokenType.RightArrow)
-            {
-            }
-            else
-            {
-                break;
-            }
         }
     Done:
 
