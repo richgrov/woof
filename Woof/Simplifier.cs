@@ -43,7 +43,7 @@ internal class Simplifier : Visitor<IExpr>
         IExpr simplifiedInner = expr.expr.Visit(this);
         if (simplifiedInner.ToString() != expr.expr.ToString())
         {
-            return simplifiedInner;
+            return new NotExpr(simplifiedInner);
         }
 
         bool isBinaryInner = expr.expr is AndExpr || expr.expr is OrExpr || expr.expr is ImplicationExpr;
