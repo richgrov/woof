@@ -41,4 +41,15 @@ public class TokenizeTest
 
         CollectionAssertExt.AreEqual(expected, tokens);
     }
+
+    [TestMethod]
+    public void TestThrows()
+    {
+        var badInputs = new string[] { "-(", "<-<" };
+
+        foreach (string input in badInputs)
+        {
+            Assert.ThrowsException<ParseException>(() => new Tokenizer(input).Next());
+        }
+    }
 }
