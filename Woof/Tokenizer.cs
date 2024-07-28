@@ -37,9 +37,10 @@ internal class Tokenizer
                 return new Token(TokenType.Not, _line, col, null);
             case '-':
                 char after = _input[_readIndex++];
+                _col++;
                 if (after == '>')
                 {
-                    return new Token(TokenType.RightArrow, _line, _col++, null);
+                    return new Token(TokenType.RightArrow, _line, col, null);
                 }
                 else
                 {
@@ -48,6 +49,7 @@ internal class Tokenizer
             case '<':
                 char after1 = _input[_readIndex++];
                 char after2 = _input[_readIndex++];
+                _col += 2;
                 if (after1 == '-' && after2 == '>')
                 {
                     return new Token(TokenType.DoubleArrow, _line, col, null);
